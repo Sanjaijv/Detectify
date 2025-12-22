@@ -1,6 +1,5 @@
 import path from 'path';
 import fs from 'fs';
-import { File } from 'buffer';
 
 const AI_MODEL_SERVICE_URL = process.env.AI_MODEL_SERVICE_URL || 'http://localhost:5000';
 
@@ -8,8 +7,9 @@ export const analyzeVideo = async (videoPath, scanType) => {
     try {
         console.log(`Reading video from: ${videoPath}`);
         const fileContent = fs.readFileSync(videoPath);
-
         const fileName = path.basename(videoPath);
+
+        // In Node 20+, File and Blob are global.
         const videoFile = new File([fileContent], fileName, { type: 'video/mp4' });
 
         const formData = new FormData();

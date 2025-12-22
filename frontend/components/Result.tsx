@@ -43,9 +43,44 @@ const itemVariants = {
 const Result: React.FC<ResultProps> = ({ filename, scanType, aiLikelihood, physicsMarkers, onReset }) => {
     const isLikelyAI = aiLikelihood > 0.5;
 
+    const handleShare = async () => {
+        const shareText = `Analysis Report: ${filename}\nAI Likelihood: ${(aiLikelihood * 100).toFixed(0)}%\nStatus: ${aiLikelihood > 0.5 ? 'Suspicious' : 'Authentic'}`;
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: 'Detectify Analysis Report',
+                    text: shareText,
+                    url: window.location.href,
+                });
+            } catch (err) {
+                console.error('Error sharing:', err);
+            }
+        } else {
+            await navigator.clipboard.writeText(`${shareText}\nLink: ${window.location.href}`);
+            alert('Report summary copied to clipboard!');
+        }
+    };
+
+    const handleDownload = () => {
+        const data = {
+            filename,
+            scanType,
+            aiLikelihood,
+            physicsMarkers,
+            timestamp: new Date().toISOString()
+        };
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `analysis_report_${filename.split('.')[0]}.json`;
+        link.click();
+        URL.revokeObjectURL(url);
+    };
+
     return (
         <div className="w-full max-w-5xl mx-auto space-y-12">
-            <div className="flex items-center justify-between pb-8 border-b border-slate-100">
+            <div className="flex items-center justify-between pb-8 border-b border-slate-100/10">
                 <div className="space-y-1">
                     <button
                         onClick={onReset}
@@ -64,12 +99,20 @@ const Result: React.FC<ResultProps> = ({ filename, scanType, aiLikelihood, physi
                         <span className="uppercase text-indigo-600 tracking-[0.2em]">{scanType}</span>
                     </div>
                 </div>
-                <div className="flex space-x-3">
-                    <button className="p-4 text-slate-300 bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 hover:text-indigo-400 transition-all hover:bg-white/10">
-                        <Share2 size={20} />
+                <div className="flex items-center space-x-6">
+                    <button
+                        onClick={handleShare}
+                        className="p-5 text-slate-300 bg-white/5 backdrop-blur-xl rounded-[28px] border border-white/10 hover:text-indigo-400 transition-all hover:bg-white/10 active:scale-95 group relative shadow-premium"
+                        title="Share Report"
+                    >
+                        <Share2 size={24} className="transition-transform group-hover:scale-110" />
                     </button>
-                    <button className="p-4 text-slate-300 bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 hover:text-indigo-400 transition-all hover:bg-white/10">
-                        <Download size={20} />
+                    <button
+                        onClick={handleDownload}
+                        className="p-5 text-slate-300 bg-white/5 backdrop-blur-xl rounded-[28px] border border-white/10 hover:text-indigo-400 transition-all hover:bg-white/10 active:scale-95 group relative shadow-premium"
+                        title="Download JSON Report"
+                    >
+                        <Download size={24} className="transition-transform group-hover:scale-110" />
                     </button>
                 </div>
             </div>

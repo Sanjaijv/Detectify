@@ -11,15 +11,21 @@ export const quickScan = async (req, res) => {
 
     const aiResult = await analyzeVideo(videoPath, scanType);
 
-    const savedResult = await ScanResult.create({
-      filename,
-      scanType,
-      aiProbability: aiResult.aiLikelihood,
-      verdict: aiResult.aiLikelihood > 0.5 ? "fail" : "pass",
-    });
+    let savedResultId = null;
+    try {
+      const savedResult = await ScanResult.create({
+        filename,
+        scanType,
+        aiProbability: aiResult.aiLikelihood,
+        verdict: aiResult.aiLikelihood > 0.5 ? "fail" : "pass",
+      });
+      savedResultId = savedResult._id;
+    } catch (dbErr) {
+      console.error("Database save failed (continuing without saving):", dbErr.message);
+    }
 
     res.json({
-      id: savedResult._id,
+      id: savedResultId,
       ...aiResult,
     });
 
