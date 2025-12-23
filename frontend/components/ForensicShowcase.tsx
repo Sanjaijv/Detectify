@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { Scan, ShieldCheck, Microscope, Layers } from 'lucide-react';
 
 const features = [
@@ -42,7 +43,7 @@ export default function ForensicShowcase() {
                     How the Scanner <br /> Sees the World
                 </h2>
                 <p className="max-w-2xl text-lg text-slate-400 font-medium leading-relaxed">
-                    Our multi-layer forensic engine doesn't just look for "AI signs"—it validates the fundamental physics of light and motion.
+                    Our multi-layer forensic engine doesn&apos;t just look for &quot;AI signs&quot;&mdash;it validates the fundamental physics of light and motion.
                 </p>
             </div>
 
@@ -59,10 +60,11 @@ export default function ForensicShowcase() {
                             className="group relative"
                         >
                             <div className="relative aspect-video w-full rounded-[40px] overflow-hidden bg-white/5 backdrop-blur-xl shadow-premium border border-white/10 transition-all duration-700 group-hover:shadow-indigo-500/30">
-                                <img
+                                <Image
                                     src={feature.image}
                                     alt={feature.title}
-                                    className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 opacity-80"
+                                    fill
+                                    className="object-cover transition-transform duration-1000 group-hover:scale-110 opacity-80"
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent opacity-60" />
                                 <div className="absolute bottom-8 left-8 right-8">

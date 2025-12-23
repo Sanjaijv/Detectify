@@ -23,7 +23,6 @@ const diagnosticMessages = [
 const Upload: React.FC<UploadProps> = ({ onUpload, isLoading, onInteraction }) => {
     const [file, setFile] = useState<File | null>(null);
     const [progress, setProgress] = useState(0);
-    const [diagnosticIndex, setDiagnosticIndex] = useState(0);
 
     const onDrop = useCallback((acceptedFiles: File[]) => {
         if (acceptedFiles.length > 0) {
@@ -35,8 +34,6 @@ const Upload: React.FC<UploadProps> = ({ onUpload, isLoading, onInteraction }) =
     useEffect(() => {
         let interval: NodeJS.Timeout;
         if (isLoading) {
-            setProgress(0);
-            setDiagnosticIndex(0);
             interval = setInterval(() => {
                 setProgress(prev => {
                     if (prev >= 100) return 100;
@@ -48,15 +45,10 @@ const Upload: React.FC<UploadProps> = ({ onUpload, isLoading, onInteraction }) =
         return () => clearInterval(interval);
     }, [isLoading]);
 
-    useEffect(() => {
-        if (isLoading) {
-            const index = Math.min(
-                Math.floor((progress / 100) * diagnosticMessages.length),
-                diagnosticMessages.length - 1
-            );
-            setDiagnosticIndex(index);
-        }
-    }, [progress, isLoading]);
+    const diagnosticIndex = Math.min(
+        Math.floor((progress / 100) * diagnosticMessages.length),
+        diagnosticMessages.length - 1
+    );
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop,
@@ -136,7 +128,12 @@ const Upload: React.FC<UploadProps> = ({ onUpload, isLoading, onInteraction }) =
                         className="mt-12"
                     >
                         <button
-                            onClick={() => !isLoading && onUpload(file)}
+                            onClick={() => {
+                                if (!isLoading) {
+                                    setProgress(0);
+                                    onUpload(file);
+                                }
+                            }}
                             className={`relative w-full py-7 px-16 rounded-[40px] font-black text-xl uppercase tracking-[0.4em] transition-all duration-500 overflow-hidden shadow-2xl
                                 ${isLoading
                                     ? 'bg-slate-100 text-slate-900 cursor-not-allowed shadow-none'

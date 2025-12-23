@@ -11,17 +11,18 @@ function PointCloud({ isLikelyAI }: { isLikelyAI: boolean }) {
 
     const particles = useMemo(() => {
         const temp = new Float32Array(count * 3);
+        // Use a simple deterministic sequence to avoid Math.random() lint error
         for (let i = 0; i < count; i++) {
             const factor = isLikelyAI ? 4 : 0.8;
-            const x = (Math.random() - 0.5) * factor;
-            const y = (Math.random() - 0.5) * factor;
-            const z = (Math.random() - 0.5) * factor;
+            const x = ((Math.sin(i * 12.9898) * 43758.5453) % 1) * factor;
+            const y = ((Math.sin(i * 78.233) * 43758.5453) % 1) * factor;
+            const z = ((Math.sin(i * 45.164) * 43758.5453) % 1) * factor;
             temp.set([x, y, z], i * 3);
         }
         return temp;
     }, [isLikelyAI]);
 
-    useFrame((state) => {
+    useFrame(() => {
         if (meshRef.current) {
             meshRef.current.rotation.y += 0.002;
             meshRef.current.rotation.z += 0.001;
