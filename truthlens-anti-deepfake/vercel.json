@@ -1,14 +1,5 @@
 {
   "buildCommand": "npm run build",
   "installCommand": "npm install",
-  "devCommand": "next dev",
-  "outputDirectory": "out",
-  "framework": "nextjs",
-  "ignoreBuildErrors": true,
-  "projects": [
-    {
-      "name": "truth-lens-frontend",
-      "rootDirectory": "frontend"
-    }
-  ]
+  "outputDirectory": "dist"
 }
